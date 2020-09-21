@@ -1,0 +1,9 @@
+- pipeline.id: log-sample-generator
+  path.config: "/usr/share/logstash/config/logstash-log-generator.conf"
+  queue.type: persisted
+- pipeline.id: log-sample-replicate
+  path.config: "/usr/share/logstash/config/logstash-log-replicate.conf"
+  queue.type: persisted
+- pipeline.id: log-sample-monitoring
+  path.config: "/usr/share/logstash/config/logstash-log-monitoring.conf"
+  queue.type: persisted

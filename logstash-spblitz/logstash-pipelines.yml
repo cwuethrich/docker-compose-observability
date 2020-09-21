@@ -1,0 +1,3 @@
+- pipeline.id: spblitz
+  path.config: "/usr/share/logstash/config/logstash-spblitz.conf"
+  queue.type: persisted

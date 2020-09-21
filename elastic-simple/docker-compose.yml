@@ -1,0 +1,64 @@
+version: '3.8'
+services:
+  es01:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.9.1
+    container_name: es01
+    environment:
+      - node.name=es01
+      - cluster.name=es-docker-cluster
+      - discovery.seed_hosts=es02,es03
+      - cluster.initial_master_nodes=es01,es02,es03
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - xpack.monitoring.collection.enabled=true
+      - xpack.monitoring.elasticsearch.collection.enabled=true
+    networks:
+      - elastic
+    ports:
+      - 9200:9200
+      - 9300:9300
+  es02:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.9.1
+    container_name: es02
+    environment:
+      - node.name=es02
+      - cluster.name=es-docker-cluster
+      - discovery.seed_hosts=es01,es03
+      - cluster.initial_master_nodes=es01,es02,es03
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - xpack.monitoring.collection.enabled=true
+      - xpack.monitoring.elasticsearch.collection.enabled=true
+    networks:
+      - elastic
+  es03:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.9.1
+    container_name: es03
+    environment:
+      - node.name=es03
+      - cluster.name=es-docker-cluster
+      - discovery.seed_hosts=es01,es02
+      - cluster.initial_master_nodes=es01,es02,es03
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - xpack.monitoring.collection.enabled=true
+      - xpack.monitoring.elasticsearch.collection.enabled=true
+    networks:
+      - elastic
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.9.1
+    container_name: kibana
+    depends_on:
+      - es01
+      - es02
+      - es03
+    ports:
+      - 5601:5601
+    environment:
+      SERVER_NAME: kibana
+      SERVER_HOST: 0.0.0.0
+      ELASTICSEARCH_HOSTS: '["http://es01:9200","http://es02:9200","http://es03:9200"]'
+    networks:
+      - elastic
+
+networks:
+  elastic:
+    driver: bridge
+    name: elastic

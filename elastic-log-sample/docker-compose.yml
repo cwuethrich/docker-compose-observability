@@ -1,0 +1,72 @@
+version: '3.8'
+services:
+  es-log-sample:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.9.1
+    container_name: es-log-sample
+    environment:
+      - node.name=es-log-sample
+      - cluster.name=es-log-sample
+      - cluster.initial_master_nodes=es-log-sample
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - xpack.monitoring.collection.enabled=true
+      - xpack.monitoring.elasticsearch.collection.enabled=true
+    networks:
+      - elastic-log-sample
+    ports:
+      - 9210:9200
+      - 9310:9300
+  kibana-log-sample:
+    image: docker.elastic.co/kibana/kibana:7.9.1
+    container_name: kibana-log-sample
+    depends_on:
+      - es-log-sample
+    ports:
+      - 5611:5601
+    environment:
+      SERVER_NAME: kibana-log-sample
+      SERVER_HOST: 0.0.0.0
+      ELASTICSEARCH_HOSTS: '["http://es-log-sample:9200"]'
+    networks:
+      - elastic-log-sample
+  logstash-log-sample-generator:
+      image: docker.elastic.co/logstash/logstash:7.9.1
+      # build: logstash
+      container_name: logstash-log-sample-generator
+      volumes:
+          - ./logstash.yml:/usr/share/logstash/config/logstash.yml
+          - ./logstash-pipelines.yml:/usr/share/logstash/config/pipelines.yml
+          - ./logstash-log-generator.conf:/usr/share/logstash/config/logstash-log-generator.conf
+      networks:
+          - elastic-log-sample
+  logstash-log-sample-replicate:
+      image: docker.elastic.co/logstash/logstash:7.9.1
+      # build: logstash
+      container_name: logstash-log-sample-replicate
+      volumes:
+          - ./logstash.yml:/usr/share/logstash/config/logstash.yml
+          - ./logstash-pipelines.yml:/usr/share/logstash/config/pipelines.yml
+          - ./logstash-log-replicate.conf:/usr/share/logstash/config/logstash-log-replicate.conf
+          - ./logstash-log-monitoring.conf:/usr/share/logstash/config/logstash-log-monitoring.conf
+      networks:
+          - elastic-log-sample
+
+  metricbeat-log-sample:
+      image: docker.elastic.co/beats/metricbeat:7.9.1
+      container_name: metricbeat-log-sample
+      hostname: metricbeat-log-sample
+      command: metricbeat -e -strict.perms=false
+      user: root #To read the docker socket
+      volumes:
+          - /var/run/docker.sock:/var/run/docker.sock:ro
+          - /sys/fs/cgroup:/hostfs/sys/fs/cgroup:ro
+          - /proc:/hostfs/proc:ro
+          - /:/hostfs:ro
+          - ./metricbeat.yml:/usr/share/metricbeat/metricbeat.yml:ro
+          - ./metricbeat-modules.yml:/usr/share/metricbeat/metricbeat-modules.yml
+      networks:
+          - elastic-log-sample
+
+networks:
+  elastic-log-sample:
+    driver: bridge
+    name: elastic-log-sample

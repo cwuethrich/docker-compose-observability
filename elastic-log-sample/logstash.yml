@@ -1,0 +1,3 @@
+node.name: "logstash-log-sample"
+xpack.monitoring.enabled: true
+xpack.monitoring.elasticsearch.hosts: [ "http://es-log-sample:9200" ]
