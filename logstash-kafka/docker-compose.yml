@@ -1,0 +1,9 @@
+version: '3.8'
+services:
+    logstash-kafka:
+        image: docker.elastic.co/logstash/logstash:7.9.1
+        container_name: logstash-kafka
+        volumes:
+            - ./logstash.yml:/usr/share/logstash/config/logstash.yml
+            - ./logstash-pipelines.yml:/usr/share/logstash/config/pipelines.yml
+            - ./logstash-kafka-metricbeat.conf:/usr/share/logstash/config/logstash-kafka-metricbeat.conf

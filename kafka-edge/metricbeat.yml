@@ -1,0 +1,45 @@
+metricbeat.config:
+  modules:
+    path: ${path.config}/metricbeat-modules.yml
+    reload.enabled: false
+    
+# ---------------------------- Elasticsearch Output ----------------------------
+output.kafka:
+  # initial brokers for reading cluster metadata
+  hosts: ["kafka-edge:19092"]
+
+  # message topic selection + partitioning
+  topic: 'metricbeat'
+  partition.round_robin:
+    reachable_only: false
+
+  required_acks: 1
+  compression: gzip
+  max_message_bytes: 1000000
+
+processors:
+  - add_host_metadata: ~
+  # - add_cloud_metadata: ~
+  # - add_docker_metadata: ~
+  # - add_kubernetes_metadata: ~
+
+
+# ================================== Logging ===================================
+
+# Sets log level. The default log level is info.
+# Available log levels are: error, warning, info, debug
+#logging.level: debug
+
+# At debug level, you can selectively enable logging only for some components.
+# To enable all selectors use ["*"]. Examples of other selectors are "beat",
+# "publish", "service".
+#logging.selectors: ["*"]
+
+# ============================= X-Pack Monitoring ==============================
+# Metricbeat can export internal metrics to a central Elasticsearch monitoring
+# cluster.  This requires xpack monitoring to be enabled in Elasticsearch.  The
+# reporting is disabled by default.
+
+# Set to true to enable the monitoring reporter.
+# monitoring.enabled: true
+
