@@ -1,0 +1,3 @@
+- pipeline.id: mssql-log
+  path.config: "/usr/share/logstash/config/logstash-mssql-log.conf"
+  queue.type: persisted

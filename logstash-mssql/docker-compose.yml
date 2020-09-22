@@ -1,0 +1,16 @@
+version: '3.8'
+services:
+    logstash-mssql:
+        image: docker.elastic.co/logstash/logstash:7.9.1
+        container_name: logstash-mssql
+        volumes:
+            - ./logstash.yml:/usr/share/logstash/config/logstash.yml
+            - ./logstash-pipelines.yml:/usr/share/logstash/config/pipelines.yml
+            - ./logstash-mssql-log.conf:/usr/share/logstash/config/logstash-mssql-log.conf
+            - ./mssql-jdbc-8.4.1.jre11.jar:/usr/share/logstash/logstash-core/lib/jars/mssql-jdbc.jar:ro
+        networks:
+            - elastic
+
+networks:
+    elastic:
+        external: true
