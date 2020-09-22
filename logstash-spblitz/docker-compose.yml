@@ -1,9 +1,9 @@
 version: '3.8'
 services:
-    logstash:
+    logstash-spblitz:
         image: docker.elastic.co/logstash/logstash:7.9.1
         # build: logstash
-        container_name: logstash
+        container_name: logstash-spblitz
         volumes:
             - ./logstash.yml:/usr/share/logstash/config/logstash.yml
             - ./logstash-pipelines.yml:/usr/share/logstash/config/pipelines.yml
@@ -11,23 +11,13 @@ services:
             - ./mssql-jdbc-8.4.1.jre11.jar:/usr/share/logstash/logstash-core/lib/jars/mssql-jdbc.jar:ro
         networks:
             - elastic
-    mssql:
+    mssql-spblitz:
         build: mssql
+        container_name: mssql-spblitz
         networks:
             - elastic
         ports:
-            - 1433:1433
-    # metricbeat:
-    #     image: docker.elastic.co/beats/metricbeat:7.9.1
-    #     container_name: metricbeat
-    #     hostname: metricbeat
-    #     command: metricbeat -e -strict.perms=false
-    #     # user: root #To read the docker socket
-    #     volumes:
-    #         - ./metricbeat.yml:/usr/share/metricbeat/metricbeat.yml:ro
-    #         - ./metricbeat-modules.yml:/usr/share/metricbeat/metricbeat-modules.yml
-    #     networks:
-    #         - elastic
+            - 1443:1433
 
 networks:
     elastic:

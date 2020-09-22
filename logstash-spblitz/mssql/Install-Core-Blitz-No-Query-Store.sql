@@ -1,3 +1,11 @@
+IF (NOT EXISTS(SELECT NULL FROM sys.databases WHERE name = 'spblitz'))
+	CREATE DATABASE spblitz;
+GO
+USE spblitz;
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
 IF OBJECT_ID('dbo.sp_Blitz') IS NULL
   EXEC ('CREATE PROCEDURE dbo.sp_Blitz AS RETURN 0;');
 GO

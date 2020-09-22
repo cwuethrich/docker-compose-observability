@@ -7,6 +7,7 @@ WORKDIR /usr/src/app
 
 # Copy initialization scripts
 COPY ./run-initialization.sh /usr/src/app/run-initialization.sh
+COPY ./entrypoint.sh /usr/src/app/entrypoint.sh
 COPY ./Install-Core-Blitz-No-Query-Store.sql /usr/src/app/Install-Core-Blitz-No-Query-Store.sql
 
 # Grant permissions for the run-initialization script to be executable
@@ -14,7 +15,7 @@ RUN chmod +x /usr/src/app/run-initialization.sh
 
 # Set environment variables, not to have to write them with docker run command
 # Note: make sure that your password matches what is in the run-initialization script 
-ENV SA_PASSWORD spblitz$spblitz
+ENV SA_PASSWORD spblitz2020+
 ENV ACCEPT_EULA Y
 ENV MSSQL_PID Express
 
@@ -23,3 +24,4 @@ EXPOSE 1433
 
 # Run Microsoft SQl Server and initialization script (at the same time)
 # Note: If you want to start MsSQL only (without initialization script) you can comment bellow line out, CMD entry from base image will be taken
+CMD /bin/bash ./entrypoint.sh
