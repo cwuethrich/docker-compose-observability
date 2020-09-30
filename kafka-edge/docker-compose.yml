@@ -42,3 +42,31 @@ services:
       - /:/hostfs:ro
       - ./metricbeat.yml:/usr/share/metricbeat/metricbeat.yml:ro
       - ./metricbeat-modules.yml:/usr/share/metricbeat/metricbeat-modules.yml
+  schema-registry-kafka-edge:
+    image: confluentinc/cp-schema-registry:5.5.0
+    container_name: schema-registry-kafka-edge
+    hostname: schema-registry-kafka-edge
+    ports:
+    - 8081:8081
+    depends_on:
+    - kafka-edge
+    environment:
+      SCHEMA_REGISTRY_HOST_NAME: schema-registry-kafka-edge
+      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: kafka-edge:19092
+      SCHEMA_REGISTRY_MASTER_ELIGIBILITY: 'true'
+      SCHEMA_REGISTRY_KAFKASTORE_TOPIC_REPLICATION_FACTOR: 1
+      SCHEMA_REGISTRY_ACCESS_CONTROL_ALLOW_ORIGIN: '*'
+      SCHEMA_REGISTRY_ACCESS_CONTROL_ALLOW_METHODS: GET,POST,PUT,OPTIONS
+  kafka-edge-rest:
+    image: confluentinc/cp-kafka-rest:5.5.0
+    container_name: kafka-edge-rest
+    hostname: kafka-edge-rest
+    ports:
+    - 8082:8082
+    depends_on:
+      - schema-registry-kafka-edge
+    environment:
+      KAFKA_REST_BOOTSTRAP_SERVERS: kafka-edge:19092
+      KAFKA_REST_SCHEMA_REGISTRY_URL: schema-registry-kafka-edge:8081
+      KAFKA_REST_HOST_NAME: kafka-edge-rest
+      KAFKA_REST_LISTENERS: http://kafka-edge-rest:8082
